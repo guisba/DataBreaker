@@ -5,6 +5,8 @@ const MODULES=[
   'handlers/__init__.py','handlers/archive.py','handlers/audio.py','handlers/base.py','handlers/generic.py','handlers/iso_bmff.py','handlers/jpeg.py','handlers/ooxml.py','handlers/pdf.py','handlers/png.py','handlers/svg.py','handlers/webp.py'
 ];
 let pyodide=null;
+const optionalPackages={pypdf:false,mutagen:false};
+let micropipReady=false;
 function safeName(name){return String(name||'file').replace(/[\\/:*?"<>|\x00-\x1f]/g,'_').replace(/^\.+/,'file').slice(0,180)||'file'}
 async function loadSourceTree(){
   pyodide.FS.mkdirTree('/app/databreaker/handlers');
@@ -18,16 +20,31 @@ async function loadSourceTree(){
 async function init(){
   importScripts(`${PYODIDE_BASE}pyodide.js`);
   pyodide=await loadPyodide({indexURL:PYODIDE_BASE});
-  await pyodide.loadPackage('micropip');
-  await pyodide.runPythonAsync("import micropip; await micropip.install(['pypdf>=5,<7','mutagen>=1.47,<2'])");
   await loadSourceTree();
   await pyodide.runPythonAsync('from databreaker.engine import scan_file, clean_file; from databreaker.models import CleanMode, NormalizationProfile; from databreaker.report import json_report, text_report');
+}
+function optionalPackageFor(name){
+  const lower=String(name||'').toLowerCase();
+  if(lower.endsWith('.pdf'))return 'pypdf';
+  if(/\.(mp3|flac|ogg|wav|mp4|mov|m4a|m4b)$/i.test(lower))return 'mutagen';
+  return null;
+}
+async function ensureOptionalPackage(name){
+  const pkg=optionalPackageFor(name);
+  if(!pkg||optionalPackages[pkg])return;
+  if(!micropipReady){await pyodide.loadPackage('micropip');micropipReady=true}
+  const spec=pkg==='pypdf'?'pypdf>=5,<7':'mutagen>=1.47,<2';
+  pyodide.globals.set('db_optional_spec',spec);
+  try{await pyodide.runPythonAsync("import micropip; await micropip.install(db_optional_spec)")}
+  finally{pyodide.globals.delete('db_optional_spec')}
+  optionalPackages[pkg]=true;
 }
 function writeInput(name,buffer,id){
   const dir=`/work/${id}`;pyodide.FS.mkdirTree(dir);const path=`${dir}/${safeName(name)}`;pyodide.FS.writeFile(path,new Uint8Array(buffer));return {dir,path};
 }
 async function pyString(code,vars={}){for(const [k,v] of Object.entries(vars))pyodide.globals.set(k,v);return await pyodide.runPythonAsync(code)}
 async function scan(msg){
+  await ensureOptionalPackage(msg.name);
   const {dir,path}=writeInput(msg.name,msg.bytes,msg.id);
   try{
     const json=await pyString("import json; from pathlib import Path; json.dumps(scan_file(Path(db_path), db_name).to_dict(), ensure_ascii=False)",{db_path:path,db_name:msg.name});
@@ -35,6 +52,7 @@ async function scan(msg){
   }finally{await pyString("import shutil; shutil.rmtree(db_dir, ignore_errors=True)",{db_dir:dir})}
 }
 async function clean(msg){
+  await ensureOptionalPackage(msg.name);
   const {dir,path}=writeInput(msg.name,msg.bytes,msg.id);
   try{
     const options=JSON.stringify(msg.options||{});
