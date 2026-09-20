@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "python scripts/build_web.py --output dist",
+  "buildCommand": "python scripts/build_web.py --output dist --vendor-pyodide",
   "outputDirectory": "dist",
   "cleanUrls": true,
   "headers": [
