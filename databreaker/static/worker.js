@@ -19,7 +19,7 @@ async function loadSourceTree(){
   await pyodide.runPythonAsync("import sys; sys.path.insert(0, '/app')");
 }
 async function init(){
-  importScripts(`${PYODIDE_BASE}pyodide.js`);
+  const {loadPyodide}=await import(`${PYODIDE_BASE}pyodide.mjs`);
   pyodide=await loadPyodide({indexURL:PYODIDE_BASE,packageBaseUrl:PYODIDE_CDN_BASE});
   await loadSourceTree();
   await pyodide.runPythonAsync('from databreaker.engine import scan_file, clean_file; from databreaker.models import CleanMode, NormalizationProfile; from databreaker.report import json_report, text_report');
