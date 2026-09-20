@@ -56,9 +56,9 @@ def test_public_bundle_targets_vercel_not_appdeploy():
     assert "public vercel edition" in privacy
 
 
-def test_readme_preview_asset_exists_and_is_png():
+def test_readme_preview_asset_exists_and_is_jpeg():
     root = Path(__file__).parents[1]
-    preview = root / "docs" / "preview-v0.2.png"
+    preview = root / "docs" / "preview-v0.2.jpg"
     assert preview.is_file()
     assert preview.read_bytes().startswith(b"\x89PNG\r\n\x1a\n")
-    assert "docs/preview-v0.2.png" in (root / "README.md").read_text(encoding="utf-8")
+    assert "docs/preview-v0.2.jpg" in (root / "README.md").read_text(encoding="utf-8")
