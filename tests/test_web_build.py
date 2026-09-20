@@ -54,6 +54,8 @@ def test_public_bundle_targets_vercel_not_appdeploy():
     assert "appdeploy" not in app
     assert "github pages edition" not in readme
     assert "public vercel edition" in privacy
+    assert "appdeploy" not in readme
+    assert "appdeploy" not in privacy
 
 
 def test_readme_preview_asset_exists_and_is_jpeg():
