@@ -3,8 +3,8 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@6over3/zeroperl-ts": "1.0.10",
-    "@uswriting/exiftool": "1.0.9"
+    "@lilohuang/zeroperl-ts": "1.0.11",
+    "@lilohuang/exiftool": "1.0.10"
   },
   "devDependencies": {
     "esbuild": "0.25.10"
