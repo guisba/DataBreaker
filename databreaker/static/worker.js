@@ -78,6 +78,12 @@ async function pyString(code,vars={}){
 }
 
 async function getExifToolRuntime(){
+  // ZeroPerl 1.0.11 identifies browsers through window+document. Web Workers
+  // intentionally expose neither, so provide minimal detection aliases before
+  // evaluating the module. The library only uses these names for environment
+  // detection; all I/O still goes through fetch() and the in-memory WASI FS.
+  if(typeof globalThis.window==='undefined')globalThis.window=globalThis;
+  if(typeof globalThis.document==='undefined')globalThis.document=Object.freeze({});
   if(!exiftoolRuntimePromise)exiftoolRuntimePromise=import('./exiftool-runtime.js');
   return await exiftoolRuntimePromise;
 }
