@@ -60,5 +60,30 @@ def test_readme_preview_asset_exists_and_is_jpeg():
     root = Path(__file__).parents[1]
     preview = root / "docs" / "preview-v0.2.jpg"
     assert preview.is_file()
-    assert preview.read_bytes().startswith(b"\x89PNG\r\n\x1a\n")
+    assert preview.read_bytes().startswith(b"\xff\xd8\xff")
     assert "docs/preview-v0.2.jpg" in (root / "README.md").read_text(encoding="utf-8")
+
+
+def test_image_upload_path_does_not_require_optional_parsers():
+    root = Path(__file__).parents[1]
+    worker = (root / "databreaker" / "static" / "worker.js").read_text(encoding="utf-8")
+    init_block = worker.split("async function init(){", 1)[1].split("function optionalPackageFor", 1)[0]
+    assert "micropip.install" not in init_block
+    assert "loadPackage('micropip')" not in init_block
+    assert "if(lower.endsWith('.pdf'))return 'pypdf';" in worker
+    assert "mp3|flac|ogg|wav|mp4|mov|m4a|m4b" in worker
+
+
+def test_finding_filters_bind_to_all_buttons():
+    root = Path(__file__).parents[1]
+    app = (root / "databreaker" / "static" / "app.js").read_text(encoding="utf-8")
+    assert "$$('.filter').forEach" in app
+    assert "$('.filter').forEach" not in app
+
+
+def test_scan_errors_are_isolated_per_file():
+    root = Path(__file__).parents[1]
+    app = (root / "databreaker" / "static" / "app.js").read_text(encoding="utf-8")
+    assert "const valid=[],errors=[];" in app
+    assert "errors.push" in app
+    assert "if(valid.length)" in app
