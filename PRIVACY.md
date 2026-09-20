@@ -4,7 +4,7 @@ DataBreaker has three execution models. The UI identifies which model is active.
 
 ## Browser-only public edition
 
-The public browser edition at https://databreaker-pcdnak.v2.appdeploy.ai/ runs the metadata engine inside the browser using Pyodide/WebAssembly. Selected files are read by the browser and processed in its local WebAssembly filesystem. DataBreaker does not upload those files to an application backend.
+The public Vercel edition runs the metadata engine inside the browser using Pyodide/WebAssembly. Selected files are read by the browser and processed in its local WebAssembly filesystem. DataBreaker does not upload those files to an application backend.
 
 The first use downloads the web application, Pyodide runtime, Python parser dependencies, and DataBreaker module source from public hosting/CDN/GitHub infrastructure. Standard host/CDN access logs may therefore exist for application/runtime downloads, but those requests do not intentionally contain the selected file bytes.
 
