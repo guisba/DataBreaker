@@ -33,6 +33,7 @@ def test_vercel_config_serves_static_browser_build_only():
     config = json.loads((root / "vercel.json").read_text(encoding="utf-8"))
     assert config["outputDirectory"] == "dist"
     assert "build_web.py" in config["buildCommand"]
+    assert "--vendor-pyodide" in config["buildCommand"]
     assert "functions" not in config
 
 
@@ -40,6 +41,8 @@ def test_browser_worker_uses_versioned_pyodide_and_pinned_parsers():
     root = Path(__file__).parents[1]
     worker = (root / "databreaker" / "static" / "worker.js").read_text(encoding="utf-8")
     assert "PYODIDE_VERSION='314.0.7'" in worker
+    assert "PYODIDE_CDN_BASE" in worker
+    assert "packageBaseUrl:PYODIDE_CDN_BASE" in worker
     assert "/dev/" not in worker
     assert "pypdf>=5,<7" in worker
     assert "mutagen>=1.47,<2" in worker
@@ -90,3 +93,12 @@ def test_scan_errors_are_isolated_per_file():
     assert "const valid=[],errors=[];" in app
     assert "errors.push" in app
     assert "if(valid.length)" in app
+
+
+def test_pyodide_core_download_is_pinned_by_checksum():
+    root = Path(__file__).parents[1]
+    builder = (root / "scripts" / "build_web.py").read_text(encoding="utf-8")
+    assert 'PYODIDE_VERSION = "314.0.7"' in builder
+    assert "pyodide-core-{PYODIDE_VERSION}.tar.bz2" in builder
+    assert 'PYODIDE_CORE_SHA256 = "2abdcc2e35208af406e07724cffa85bc582ced97e9028383ecf5462541393f95"' in builder
+    assert "const PYODIDE_BASE='./pyodide/';" in builder
