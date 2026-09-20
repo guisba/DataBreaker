@@ -21,8 +21,8 @@ jobs:
       - run: python -m pytest -q
       - run: node --check databreaker/static/app.js
       - run: node --check databreaker/static/worker.js
-      - run: python scripts/build_web.py --output web-dist
-      - run: test -f web-dist/index.html && test -f web-dist/worker.js && test -f web-dist/python/databreaker/engine.py
+      - run: python scripts/build_web.py --output web-dist --vendor-pyodide
+      - run: test -f web-dist/index.html && test -f web-dist/worker.js && test -f web-dist/python/databreaker/engine.py && test -f web-dist/pyodide/pyodide.asm.wasm && test -f web-dist/pyodide/python_stdlib.zip
       - run: python -m pip wheel . --no-deps -w dist
 
 
@@ -40,7 +40,7 @@ jobs:
       - name: Install Chromium
         run: python -m playwright install --with-deps chromium
       - name: Build browser-only site
-        run: python scripts/build_web.py --output web-dist
+        run: python scripts/build_web.py --output web-dist --vendor-pyodide
       - name: Start static server
         run: |
           python -m http.server 8765 --directory web-dist > /tmp/databreaker-http.log 2>&1 &
