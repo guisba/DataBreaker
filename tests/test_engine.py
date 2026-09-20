@@ -115,3 +115,17 @@ def test_custom_normalization_controls_archive_timestamps(tmp_path:Path):
     )
     with zipfile.ZipFile(preserved.output_path) as z:
         assert z.getinfo("note.txt").date_time==(2025,6,7,8,10,0)
+
+
+def test_analysis_only_formats_do_not_advertise_cleaning(tmp_path:Path):
+    seven=tmp_path/'sample.7z'; seven.write_bytes(b"7z\xbc\xaf\x27\x1c"+b"\0"*32)
+    assert scan_file(seven).capabilities['clean'] is False
+
+    tar_path=tmp_path/'sample.tar'
+    import tarfile, io
+    with tarfile.open(tar_path,'w') as tf:
+        info=tarfile.TarInfo('note.txt'); data=b'hello'; info.size=len(data); tf.addfile(info,io.BytesIO(data))
+    assert scan_file(tar_path).capabilities['clean'] is False
+
+    heif=tmp_path/'sample.heic'; heif.write_bytes(b"\x00\x00\x00\x18ftypheic\x00\x00\x00\x00heicmif1")
+    assert scan_file(heif).capabilities['clean'] is False

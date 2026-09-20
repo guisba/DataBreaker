@@ -83,5 +83,11 @@
   "metadataNames": {},
   "categoryTranslations": {},
   "explanationTranslations": {},
-  "warningTranslations": {}
+  "warningTranslations": {},
+  "hostedModeTitle": "Hosted web mode",
+  "hostedModeText": "Files are sent to this server for temporary processing and deleted after the operation. For maximum privacy, use the local or browser-only edition.",
+  "hostedLimitText": "Hosted limit: files up to 4 MB · temporary server processing · no DataBreaker telemetry",
+  "browserModeTitle": "Private browser mode",
+  "browserModeText": "Files are processed inside your browser with WebAssembly and are not uploaded to a DataBreaker backend.",
+  "browserLimitText": "Browser-only processing · no server upload · practical limits depend on browser memory"
 }

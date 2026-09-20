@@ -23,3 +23,17 @@ def test_scan_clean_download_report_roundtrip():
     assert client.get(f'/api/download/{token}').status_code==200
     report=client.get(f'/api/report/{token}.json')
     assert report.status_code==200 and report.json()['tool']=='DataBreaker'
+
+
+def test_direct_clean_is_stateless_multipart():
+    client=TestClient(app)
+    response=client.post(
+        '/api/clean-direct',
+        files={'file':('sample.png',sample_png(),'image/png')},
+        data={'mode':'safe','profile':'compatibility','preserve_color_profile':'true','preserve_archive_timestamps':'false'},
+    )
+    assert response.status_code==200
+    assert response.headers['content-type'].startswith('multipart/form-data; boundary=')
+    assert b'name="result"' in response.content
+    assert b'name="file"' in response.content
+    assert b'"validation_ok": true' in response.content
