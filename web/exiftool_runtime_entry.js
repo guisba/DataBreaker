@@ -1,7 +1,7 @@
-import { parseMetadata } from "@uswriting/exiftool";
-import zeroperlWasm from "@6over3/zeroperl-ts/zeroperl.wasm";
+import { parseMetadata } from "@lilohuang/exiftool";
+import zeroperlWasm from "@lilohuang/zeroperl-ts/zeroperl.wasm";
 
-export const EXIFTOOL_VERSION = "13.42";
+export const EXIFTOOL_VERSION = "13.59";
 export const EXIFTOOL_ALL_ARGS = Object.freeze([
   "-json",
   "-a",
