@@ -127,3 +127,11 @@ def test_hosting_metadata_has_no_stale_deployment_references():
     assert "[tool.vercel]" not in pyproject
     assert "vercel deployment pending verification" in release
     assert "vendors the pyodide core runtime" in privacy
+
+
+def test_vercel_ignore_hides_fastapi_entrypoints():
+    root = Path(__file__).parents[1]
+    ignore = (root / ".vercelignore").read_text(encoding="utf-8")
+    assert "databreaker/app.py" in ignore
+    assert "databreaker/__main__.py" in ignore
+    assert "tests/" in ignore
