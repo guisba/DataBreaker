@@ -12,9 +12,9 @@ English · Português (Brasil) &nbsp; | &nbsp; No telemetry &nbsp; | &nbsp; File
 
 ## Interface preview
 
-![DataBreaker v0.2 black/white interface](docs/preview-v0.2.jpg)
+![DataBreaker black/white interface](docs/preview-v0.2.jpg)
 
-DataBreaker v0.2 uses a restrained black/white interface with an optional red/black theme. The workflow stays focused on evidence instead of decorative effects: drop files → inspect findings → choose a cleaning policy → verify **Original → Sanitized**.
+DataBreaker v0.3 keeps the restrained black/white interface with an optional red/black theme. The workflow stays focused on evidence instead of decorative effects: drop files → inspect findings → choose a cleaning policy → verify **Original → Sanitized**.
 
 [Read the full accessible interface description](docs/INTERFACE.md)
 
@@ -32,7 +32,11 @@ DataBreaker answers a practical question before you share a file: **what can thi
 - Direct structural parsing of JPEG, PNG, WebP, ISO-BMFF/QuickTime, OOXML and archives.
 - PDF metadata/content-structure separation and signature warnings.
 - Audio metadata support through Mutagen without transcoding.
-- Optional **read-only local ExifTool enrichment** for proprietary MakerNotes and unknown tags.
+- **Full browser metadata inventory powered by ExifTool 13.59 in WebAssembly** with duplicate tags, unknown tags, embedded documents and deep extraction enabled.
+- Local ExifTool, when available, uses the same full-inventory strategy in read-only mode.
+- Every field returned by the inventory engine stays visible; unknown/proprietary fields are shown raw instead of silently discarded.
+- C2PA/JUMBF/CBOR provenance is expanded into individual fields such as actions, claim-generator data, hashes, assertion URLs, signature-related values and unknown future fields.
+- One-click **Copy all** plus JSON/text reports for field-by-field inspection.
 - AI workflow indicators for C2PA/Content Credentials, Stable Diffusion/AUTOMATIC1111-style parameters, ComfyUI-style prompt/workflow metadata and other documented signals.
 - Security limits for hostile files, archive traversal, decompression ratios, oversized metadata and malformed structures.
 - No analytics or behavioral telemetry. The local and browser-only editions do not upload file contents to a DataBreaker backend; a separately hosted server deployment is explicitly identified and uses temporary request-scoped processing.
@@ -44,18 +48,31 @@ DataBreaker answers a practical question before you share a file: **what can thi
 | JPEG/JPG | ✓ | ✓ | Lossless marker rewrite; EXIF/XMP/IRB/ICC/JUMBF/unknown APP inspection |
 | PNG | ✓ | ✓ | CRC validation; text/eXIf/iCCP/unknown ancillary chunks; IDAT preserved |
 | WebP | ✓ | ✓ | RIFF EXIF/XMP/ICC; VP8X flags repaired; no image transcoding |
+| GIF | ✓ | — | Full ExifTool inventory including comments/application extensions/C2PA where present |
+| JFIF | ✓ | ✓* | Detected as JPEG; JFIF/EXIF/XMP/JUMBF inventory exposed |
+| DNG/CR2/CR3/NEF/ARW/ORF/PEF/CRW/RAF/RW2/RAW | ✓ | — | ExifTool 13.59 full inventory; analysis-only unless a native safe writer exists |
 | SVG | ✓ | ✓ | Metadata/editor namespace inspection; cleaning reserializes XML |
 | PDF | ✓ | ✓* | Conservative metadata rewrite; signatures/incremental history can be invalidated |
 | DOCX/XLSX/PPTX | ✓ | ✓ | Package properties + ZIP metadata; comments/revisions remain content |
 | ZIP | ✓ | ✓ | Entry payloads preserved; metadata normalized according to mode |
 | TAR | ✓ | — | UID/GID, user/group, timestamps, paths |
 | MP3/FLAC/OGG/WAV | ✓ | ✓ | Structured tag removal via Mutagen, no audio transcoding |
-| MP4/MOV/M4A | ✓ | ✓ | QuickTime/ISO-BMFF inspection; common tag rewrite without transcoding |
+| MP4/MOV/M4A/M4V | ✓ | ✓† | QuickTime/ISO-BMFF + ExifTool deep inventory; native cleaning where supported |
 | HEIF/HEIC/AVIF | ✓ | — | Conservative ISO-BMFF analysis; automatic rewrite intentionally disabled |
 | Matroska/WebM | basic | — | Container recognized; full EBML metadata cleaner is roadmap |
 | 7z | basic | — | Container recognized; deep parser is roadmap |
 
-`*` PDF cleaning rewrites document structure and therefore cannot preserve an existing byte-level digital signature.
+`*` PDF cleaning rewrites document structure and therefore cannot preserve an existing byte-level digital signature. `†` M4V is analyzed through the full inventory layer but may be analysis-only if the native writer does not advertise safe cleaning.
+
+## Full metadata inventory
+
+DataBreaker v0.3 uses **ExifTool 13.59 as the browser inventory baseline**, running locally through WebAssembly/ZeroPerl. The browser invokes ExifTool with duplicate and unknown tags enabled, deep embedded extraction (`-ee3`) and `RequestAll=3`. This is intentionally broader than a fixed hand-written list of EXIF/XMP fields.
+
+The product rule is: **if ExifTool reports a field, DataBreaker does not hide it.** Known fields receive privacy/origin explanations; fields that are new, proprietary or not yet understood remain visible with their raw tag/group and value. Native DataBreaker parsers run alongside this inventory to validate containers, classify risk and perform verified cleaning.
+
+This is also the parity strategy for viewers such as Pics.io: DataBreaker covers the common image/PDF/RAW/video families they advertise while retaining a raw fallback for additional ExifTool-supported formats. DataBreaker is not affiliated with Pics.io.
+
+Filesystem-style values such as `FileAccessDate`, `FileInodeChangeDate` and `FilePermissions` are displayed too, but labeled **filesystem/runtime metadata**. In a browser sandbox or temporary processing directory they describe that runtime copy and must not be presented as embedded source-file metadata.
 
 ## What DataBreaker looks for
 
@@ -93,13 +110,13 @@ Evidence remains visible in the finding. `Software = Adobe Photoshop` is an appl
 
 DataBreaker supports three clearly identified execution models. The public browser edition runs the Python engine in the browser through Pyodide/WebAssembly, so selected file contents are not uploaded to a DataBreaker backend. The local edition runs FastAPI on `127.0.0.1` and keeps processing on the same machine. A separately hosted FastAPI deployment can use stateless request-scoped temporary storage, but that mode is not presented as equivalent to local/browser-only privacy. The application contains no analytics or behavioral telemetry.
 
-Optional ExifTool support is local and read-only. DataBreaker does **not** automatically call online AI-detection or remote C2PA verification services. Content-level watermarks such as SynthID are not ordinary metadata and are not claimed as removable.
+The public browser edition bundles ExifTool 13.59/ZeroPerl WebAssembly for local read-only inventory. If a native ExifTool executable is already installed on the local machine, the desktop/local edition uses it for the same full-inventory purpose. DataBreaker does **not** automatically call online AI-detection or remote C2PA verification services. Content-level watermarks such as SynthID are not ordinary metadata and are not claimed as removable.
 
 ## Public browser edition
 
 The browser-only Vercel edition is live at **https://databreaker-guisba.vercel.app/**. It runs the DataBreaker Python engine inside a WebAssembly/Pyodide worker. Files remain in the browser's local memory/filesystem rather than being uploaded to an application server.
 
-The Vercel build vendors the Pyodide core runtime with the site, so JPEG/PNG startup does not depend on a third-party runtime CDN. Formats that need optional Python parsers, such as PDF or audio, can still fetch those parser packages on demand. Browser memory, device performance and supported WebAssembly features remain practical limits; the project does not advertise literally unlimited processing.
+The Vercel build vendors the Pyodide core runtime **and the ExifTool/ZeroPerl WebAssembly inventory engine** with the site. JPEG/PNG/RAW metadata inventory therefore runs in the browser without uploading the selected file to a DataBreaker backend. Formats that need optional Python parsers for native cleaning, such as PDF or audio, can still fetch those parser packages on demand. Browser memory, device performance and supported WebAssembly features remain practical limits; the project does not advertise literally unlimited processing.
 
 See [PRIVACY.md](PRIVACY.md) and [SECURITY.md](SECURITY.md) for the execution and threat models.
 
@@ -125,14 +142,14 @@ python -m databreaker
 
 Open `http://127.0.0.1:8732` if the browser does not open automatically.
 
-### Optional: ExifTool
+### ExifTool inventory
 
-If `exiftool` is already on `PATH`, DataBreaker automatically uses it for **read-only enrichment** of manufacturer-specific and unknown tags. It is optional; DataBreaker does not install it for you and never delegates cleaning claims to it.
+The public browser edition already includes an ExifTool 13.59 WebAssembly inventory engine. In the local Python edition, if a native `exiftool` is already on `PATH`, DataBreaker automatically uses that executable in **read-only full-inventory mode**. It never delegates a cleaning claim to ExifTool unless the sanitized file is independently rescanned.
 
 ## Usage
 
 1. Drop one or more files.
-2. Review critical exposures, origin indicators, general/structural metadata and unknown fields.
+2. Review the complete ExifTool inventory plus critical exposures, origin indicators, general/structural metadata and unknown fields. Use **Copy all** or JSON export when you want a flat field/value list.
 3. Choose Safe, Deep or Clean Everything.
 4. Review the policy warning and normalization profile.
 5. Clean.
@@ -173,11 +190,11 @@ Architecture details are in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). The 
 
 ## Testing
 
-The automated suite currently covers structural detection, Safe/Deep/Clean Everything behavior, primary-content preservation for lossless handlers, unknown metadata, AI workflow metadata, malformed PNGs, archive traversal and EN/PT-BR translation parity. CI runs on Python 3.11–3.13.
+The automated suite covers structural detection, Safe/Deep/Clean Everything behavior, primary-content preservation, unknown metadata, AI workflow metadata, malformed PNGs, archive traversal, translation parity, full ExifTool browser bundling, Pics.io-baseline format recognition, C2PA/JUMBF field extraction, and a Chromium end-to-end upload/clean test. CI runs on Python 3.11–3.13.
 
 ## Limitations
 
-- Proprietary metadata is open-ended. Optional ExifTool improves coverage but cannot make the universe of private tags finite.
+- DataBreaker exposes every field returned by ExifTool 13.59 plus native-parser unknown structures, but no program can assign semantics to a future/proprietary format it has never seen. Such fields remain visible raw instead of being silently omitted.
 - SynthID and similar content-level watermarks are not metadata blocks.
 - HEIF/AVIF, Matroska/WebM and 7z need deeper safe writers before automatic cleaning is enabled.
 - Nested archives are reported as member payloads but are not recursively scanned in 0.1.
