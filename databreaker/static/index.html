@@ -1,42 +1,53 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="mono">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="color-scheme" content="dark light">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="DataBreaker analyzes and removes privacy-sensitive metadata locally in your browser or on your machine.">
   <title>DataBreaker — Metadata Privacy Analyzer</title>
   <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-  <div class="noise" aria-hidden="true"></div>
   <header class="topbar">
-    <a class="brand" href="#" aria-label="DataBreaker home">
-      <span class="brand-mark" aria-hidden="true"><span></span></span>
+    <a class="brand" href="#top" aria-label="DataBreaker home">
+      <span class="brand-mark" aria-hidden="true">DB</span>
       <span>DataBreaker</span>
     </a>
     <nav class="top-actions" aria-label="Application controls">
+      <button id="themeBtn" class="ghost small theme-button" type="button" aria-label="Switch color theme">B/W</button>
       <button id="langBtn" class="ghost small" type="button">PT-BR</button>
-      <a class="ghost small" href="https://github.com/guisba/DataBreaker" target="_blank" rel="noreferrer">GitHub</a>
+      <a class="ghost small" href="https://github.com/guisba/DataBreaker" target="_blank" rel="noreferrer">GitHub ↗</a>
     </nav>
   </header>
 
-  <main>
-    <section class="hero">
-      <div class="eyebrow"><span class="pulse"></span><span data-i18n="eyebrow">LOCAL-FIRST METADATA PRIVACY</span></div>
-      <h1><span data-i18n="heroA">See what your files</span> <em data-i18n="heroB">say about you.</em></h1>
+  <main id="top">
+    <section class="hero" aria-labelledby="heroTitle">
+      <div class="eyebrow" data-i18n="eyebrow">LOCAL-FIRST METADATA PRIVACY</div>
+      <h1 id="heroTitle"><span data-i18n="heroA">See what your files</span><br><strong data-i18n="heroB">say about you.</strong></h1>
       <p data-i18n="heroText">Analyze hidden metadata, origin fingerprints and provenance. Clean what can be safely removed, then verify the output independently.</p>
-      <div class="privacy-strip"><span>●</span><strong data-i18n="localOnly">Files stay on this device</strong><span class="sep">/</span><span data-i18n="noTelemetry">No telemetry</span><span class="sep">/</span><span data-i18n="verifyAfter">Automatic rescan after cleaning</span></div>
-      <div id="hostedNotice" class="hosted-notice hidden" role="status"></div>
+      <div class="privacy-strip" aria-label="Privacy properties">
+        <span><b>01</b> <span data-i18n="localOnly">Files stay on this device</span></span>
+        <span><b>02</b> <span data-i18n="noTelemetry">No telemetry</span></span>
+        <span><b>03</b> <span data-i18n="verifyAfter">Automatic rescan after cleaning</span></span>
+      </div>
+      <div id="hostedNotice" class="runtime-notice hidden" role="status"></div>
     </section>
 
     <section id="dropzone" class="dropzone" tabindex="0" role="button" aria-describedby="dropHint">
       <input id="fileInput" type="file" multiple hidden>
-      <div class="drop-orbit" aria-hidden="true"><div class="drop-core">+</div></div>
-      <h2 data-i18n="dropTitle">Drop files to break the metadata trail</h2>
-      <p id="dropHint" data-i18n="dropText">JPEG, PNG, WebP, SVG, PDF, Office, ZIP/TAR, audio, MP4/MOV, HEIF/AVIF and more</p>
-      <button class="primary" id="browseBtn" type="button" data-i18n="chooseFiles">Choose files</button>
-      <small data-i18n="limitText">Up to 20 files · 100 MB each · local processing</small>
+      <div class="drop-index" aria-hidden="true">+</div>
+      <div class="drop-copy">
+        <h2 data-i18n="dropTitle">Drop files to break the metadata trail</h2>
+        <p id="dropHint" data-i18n="dropText">JPEG, PNG, WebP, SVG, PDF, Office, ZIP/TAR, audio, MP4/MOV, HEIF/AVIF and more</p>
+      </div>
+      <div class="drop-actions">
+        <button class="primary" id="browseBtn" type="button" data-i18n="chooseFiles">Choose files</button>
+        <small data-i18n="limitText">Up to 20 files · 100 MB each · local processing</small>
+      </div>
     </section>
+
+    <div id="errorBanner" class="error-banner hidden" role="alert"></div>
 
     <section id="workspace" class="workspace hidden" aria-live="polite">
       <div class="workspace-head">
@@ -44,20 +55,24 @@
         <button id="addFiles" class="ghost" type="button" data-i18n="addFiles">+ Add files</button>
       </div>
       <div id="fileTabs" class="file-tabs"></div>
+
       <div id="scanState" class="scan-state hidden">
-        <div class="scanner"><i></i><i></i><i></i></div>
+        <div class="scanner" aria-hidden="true"><span></span></div>
         <div><strong data-i18n="scanning">Mapping metadata surfaces…</strong><span data-i18n="scanningSub">Parsing containers, provenance and origin indicators</span></div>
       </div>
+
       <div id="resultPanel" class="result-panel hidden">
         <aside class="summary-card">
-          <div id="riskScore" class="risk-ring"><span>0</span><small data-i18n="findings">findings</small></div>
+          <div class="summary-label">FINDINGS</div>
+          <div id="riskScore" class="risk-score"><span>0</span><small data-i18n="findings">findings</small></div>
           <div class="file-summary"><strong id="activeName">—</strong><span id="activeMeta">—</span><code id="activeHash">—</code></div>
           <div id="validationBadge" class="badge"></div>
         </aside>
+
         <div class="details">
           <div id="criticalBanner" class="critical-banner hidden"></div>
           <div class="toolbar">
-            <div class="filter-group" role="tablist">
+            <div class="filter-group" role="tablist" aria-label="Finding filters">
               <button class="filter active" data-filter="all" data-i18n="all">All</button>
               <button class="filter" data-filter="critical" data-i18n="critical">Critical</button>
               <button class="filter" data-filter="origin" data-i18n="origin">Origin</button>
@@ -72,9 +87,9 @@
       <section id="cleanPanel" class="clean-panel hidden">
         <div class="section-title"><div><span class="section-kicker" data-i18n="cleaningPolicy">CLEANING POLICY</span><h3 data-i18n="chooseCleaning">Choose how far DataBreaker should go</h3></div></div>
         <div class="mode-grid" role="radiogroup" aria-label="Cleaning mode">
-          <label class="mode-card selected"><input type="radio" name="mode" value="safe" checked><span class="mode-icon">◇</span><strong data-i18n="safeClean">Safe Clean</strong><p data-i18n="safeDesc">Common privacy metadata, lowest compatibility risk.</p></label>
-          <label class="mode-card"><input type="radio" name="mode" value="deep"><span class="mode-icon">◈</span><strong data-i18n="deepClean">Deep Clean</strong><p data-i18n="deepDesc">Adds uncommon and application-specific metadata.</p></label>
-          <label class="mode-card danger"><input type="radio" name="mode" value="everything"><span class="mode-icon">✦</span><strong data-i18n="everything">Clean Everything</strong><p data-i18n="everythingDesc">Aggressive removal of every known nonessential field that can be safely rewritten.</p></label>
+          <label class="mode-card selected"><input type="radio" name="mode" value="safe" checked><span class="mode-number">01</span><strong data-i18n="safeClean">Safe Clean</strong><p data-i18n="safeDesc">Common privacy metadata, lowest compatibility risk.</p></label>
+          <label class="mode-card"><input type="radio" name="mode" value="deep"><span class="mode-number">02</span><strong data-i18n="deepClean">Deep Clean</strong><p data-i18n="deepDesc">Adds uncommon and application-specific metadata.</p></label>
+          <label class="mode-card danger"><input type="radio" name="mode" value="everything"><span class="mode-number">03</span><strong data-i18n="everything">Clean Everything</strong><p data-i18n="everythingDesc">Aggressive removal of every known nonessential field that can be safely rewritten.</p></label>
         </div>
         <div class="profile-row">
           <label for="profile" data-i18n="normalization">Normalization profile</label>
@@ -85,7 +100,8 @@
             <label><input id="preserveTimes" type="checkbox"> <span data-i18n="preserveTimes">Preserve archive/package timestamps</span></label>
           </div>
         </div>
-        <div id="cleanWarning" class="policy-preview"></div><div id="policyTargets" class="profile-note"></div>
+        <div id="cleanWarning" class="policy-preview"></div>
+        <div id="policyTargets" class="profile-note"></div>
         <button id="cleanBtn" class="primary wide" type="button" data-i18n="cleanVerify">Clean & verify output</button>
       </section>
 
@@ -98,7 +114,7 @@
     </section>
   </main>
 
-  <footer><span>DataBreaker</span><span data-i18n="footer">Privacy tooling should explain its limits.</span></footer>
+  <footer><span>DataBreaker / <span id="footerVersion">v0.2</span></span><span data-i18n="footer">Privacy tooling should explain its limits.</span></footer>
   <script src="/static/app.js" defer></script>
 </body>
 </html>
