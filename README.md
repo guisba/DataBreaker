@@ -6,7 +6,7 @@
 
 English · Português (Brasil) &nbsp; | &nbsp; No telemetry &nbsp; | &nbsp; Files stay on your machine
 
-[Use DataBreaker online](https://guisba.github.io/DataBreaker/) · [Public documentation](https://caveras-personal-organization.gitbook.io/databreaker/) · [Releases](https://github.com/guisba/DataBreaker/releases)
+[Use DataBreaker online](https://databreaker-pcdnak.v2.appdeploy.ai/) · [Public documentation](https://caveras-personal-organization.gitbook.io/databreaker/) · [Releases](https://github.com/guisba/DataBreaker/releases)
 
 </div>
 
@@ -14,7 +14,7 @@ English · Português (Brasil) &nbsp; | &nbsp; No telemetry &nbsp; | &nbsp; File
 
 DataBreaker uses a dark-first, single-page workflow: a large drag-and-drop area opens into a scan workspace with file tabs, a summary card, grouped metadata findings, three cleaning-policy cards, normalization controls, an **Original → Sanitized** verification panel and download actions. The public browser edition also shows a green privacy notice confirming that the file is processed inside the browser.
 
-[Read the full accessible interface description](docs/INTERFACE.md) · [Open the live browser edition](https://guisba.github.io/DataBreaker/)
+[Read the full accessible interface description](docs/INTERFACE.md) · [Open the live browser edition](https://databreaker-pcdnak.v2.appdeploy.ai/)
 
 DataBreaker answers a practical question before you share a file: **what can this file reveal about where it came from?** It inspects ordinary metadata, obscure/custom blocks, origin fingerprints, AI workflow traces and cryptographic provenance, explains the evidence, cleans what it can safely rewrite, then reopens and rescans the output instead of trusting a “success” return code.
 
@@ -89,13 +89,13 @@ Evidence remains visible in the finding. `Software = Adobe Photoshop` is an appl
 
 ## Privacy model
 
-DataBreaker supports three clearly identified execution models. The public GitHub Pages edition runs the Python engine in the browser through Pyodide/WebAssembly, so selected file contents are not uploaded to a DataBreaker backend. The local edition runs FastAPI on `127.0.0.1` and keeps processing on the same machine. A separately hosted FastAPI deployment can use stateless request-scoped temporary storage, but that mode is not presented as equivalent to local/browser-only privacy. The application contains no analytics or behavioral telemetry.
+DataBreaker supports three clearly identified execution models. The public browser edition runs the Python engine in the browser through Pyodide/WebAssembly, so selected file contents are not uploaded to a DataBreaker backend. The local edition runs FastAPI on `127.0.0.1` and keeps processing on the same machine. A separately hosted FastAPI deployment can use stateless request-scoped temporary storage, but that mode is not presented as equivalent to local/browser-only privacy. The application contains no analytics or behavioral telemetry.
 
 Optional ExifTool support is local and read-only. DataBreaker does **not** automatically call online AI-detection or remote C2PA verification services. Content-level watermarks such as SynthID are not ordinary metadata and are not claimed as removable.
 
 ## Public browser edition
 
-The browser-only edition is published at **https://guisba.github.io/DataBreaker/**. It runs the DataBreaker Python engine inside a WebAssembly/Pyodide worker. Files remain in the browser's local memory/filesystem rather than being uploaded to an application server. The first visit downloads the Python runtime and parser dependencies, so startup can take longer than the local edition.
+The browser-only edition is published at **https://databreaker-pcdnak.v2.appdeploy.ai/**. It runs the DataBreaker Python engine inside a WebAssembly/Pyodide worker. Files remain in the browser's local memory/filesystem rather than being uploaded to an application server. The first visit downloads the Python runtime and parser dependencies, so startup can take longer than the local edition.
 
 Browser memory, device performance, supported WebAssembly features and third-party runtime/CDN availability are practical limits; the project does not advertise literally unlimited processing.
 
