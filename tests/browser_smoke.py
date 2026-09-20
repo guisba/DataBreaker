@@ -55,6 +55,7 @@ def main() -> None:
         jpg = tmp_path / "photo.jpg"
         make_png(png)
         make_jpeg(jpg)
+        c2pa = Path(__file__).parent / "fixtures" / "c2pa.svg"
 
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
@@ -64,12 +65,12 @@ def main() -> None:
             page.on("pageerror", lambda exc: console_errors.append(str(exc)))
             page.on("requestfailed", lambda req: request_failures.append(f"{req.url}: {req.failure}"))
             page.goto(base_url, wait_until="domcontentloaded", timeout=60_000)
-            page.locator("#fileInput").set_input_files([str(png), str(jpg)])
+            page.locator("#fileInput").set_input_files([str(png), str(jpg), str(c2pa)])
 
             page.wait_for_function(
-                """() => document.querySelectorAll('.file-tab').length === 2 ||
+                """() => document.querySelectorAll('.file-tab').length === 3 ||
                     !document.querySelector('#errorBanner').classList.contains('hidden')""",
-                timeout=180_000,
+                timeout=300_000,
             )
             if not page.locator("#errorBanner").evaluate("(el) => el.classList.contains('hidden')"):
                 raise AssertionError(
@@ -84,12 +85,23 @@ def main() -> None:
 
             page.locator(".file-tab").nth(0).click()
             page.wait_for_timeout(100)
-            assert "Author" in page.locator("#findings").inner_text()
+            png_text = page.locator("#findings").inner_text()
+            for field in ("Author", "FileName", "FileType", "MIMEType", "ImageWidth", "ImageHeight", "BitDepth", "Compression"):
+                assert field in png_text, (field, png_text)
 
             page.locator(".file-tab").nth(1).click()
             page.wait_for_timeout(100)
-            assert "Software" in page.locator("#findings").inner_text()
+            jpg_text = page.locator("#findings").inner_text()
+            for field in ("Software", "FileName", "FileType", "MIMEType", "ImageWidth", "ImageHeight"):
+                assert field in jpg_text, (field, jpg_text)
 
+            page.locator(".file-tab").nth(2).click()
+            page.wait_for_timeout(100)
+            c2pa_text = page.locator("#findings").inner_text()
+            assert "JUMDType" in c2pa_text, c2pa_text
+            assert "JUMDLabel" in c2pa_text, c2pa_text
+
+            page.locator(".file-tab").nth(1).click()
             page.locator("#cleanBtn").click()
             page.wait_for_selector("#diffPanel:not(.hidden)", timeout=120_000)
             href = page.locator("#downloadBtn").get_attribute("href") or ""
