@@ -201,5 +201,11 @@
     "Potentially identifying information remains after cleaning.": "Ainda há informações potencialmente identificadoras após a limpeza.",
     "Primary-content hash changed unexpectedly for a format where metadata-only rewriting should preserve content semantics. Review before use.": "O hash do conteúdo principal mudou inesperadamente em um formato que deveria preservar o conteúdo ao alterar apenas metadados. Revise antes de usar.",
     "The original PDF contained a digital signature. Sanitization invalidates/removes signature validity; DataBreaker does not forge replacement signatures.": "O PDF original continha assinatura digital. A sanitização invalida/remove a validade da assinatura; o DataBreaker não fabrica assinaturas substitutas."
-  }
+  },
+  "hostedModeTitle": "Modo web hospedado",
+  "hostedModeText": "Os arquivos são enviados a este servidor para processamento temporário e apagados após a operação. Para máxima privacidade, use a edição local ou no navegador.",
+  "hostedLimitText": "Limite hospedado: arquivos de até 4 MB · processamento temporário no servidor · sem telemetria do DataBreaker",
+  "browserModeTitle": "Modo privado no navegador",
+  "browserModeText": "Os arquivos são processados dentro do seu navegador com WebAssembly e não são enviados a um backend do DataBreaker.",
+  "browserLimitText": "Processamento somente no navegador · sem upload para servidor · limites práticos dependem da memória do navegador"
 }

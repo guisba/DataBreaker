@@ -37,7 +37,8 @@ def scan_file(path: Path, display_name: str | None=None) -> ScanResult:
     findings.extend(derive_origin_findings(findings))
     ok,msg=h.validate(path)
     identity=FileIdentity(display_name or path.name,path.stat().st_size,d.mime,d.format,hashlib.sha256(path.read_bytes()).hexdigest(),content_hash)
-    return ScanResult(identity,findings,warnings,{"clean":h.supports_cleaning(),"lossless_content_expected":d.format in {"jpeg","png","webp","zip","docx","xlsx","pptx","mp3","flac","ogg","wav","mp4","mov","m4a"}}, {"ok":ok,"message":msg})
+    clean_supported=h.supports_cleaning() and d.format not in {"tar","7z","heif","avif","matroska","unknown"}
+    return ScanResult(identity,findings,warnings,{"clean":clean_supported,"lossless_content_expected":d.format in {"jpeg","png","webp","zip","docx","xlsx","pptx","mp3","flac","ogg","wav","mp4","mov","m4a"}}, {"ok":ok,"message":msg})
 
 
 def diff_results(before: ScanResult, after: ScanResult) -> DiffResult:
@@ -61,7 +62,7 @@ def diff_results(before: ScanResult, after: ScanResult) -> DiffResult:
 
 def clean_file(source: Path, output_dir: Path, mode: CleanMode, profile: NormalizationProfile, display_name: str | None=None, options: dict[str, bool] | None=None) -> CleanResult:
     before=scan_file(source,display_name); h=_handler(before.identity.format)
-    if not h.supports_cleaning(): raise ValueError(f"Cleaning is not supported for {before.identity.format}")
+    if not before.capabilities.get("clean",False): raise ValueError(f"Cleaning is not supported for {before.identity.format}")
     name=safe_filename(display_name or source.name); out=output_dir/f"{Path(name).stem}.databreaker{Path(name).suffix}"
     warnings=h.clean(source,out,mode,profile,options)
     ok,msg=h.validate(out)

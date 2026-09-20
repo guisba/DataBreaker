@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import json
 import shutil
-import subprocess
+try:
+    import subprocess
+except (ImportError, OSError):  # Browser/Pyodide environments do not provide OS subprocesses.
+    subprocess = None
 from pathlib import Path
 
 from .explanations import explain, privacy_for
@@ -11,6 +14,8 @@ from .models import Confidence, Finding, PrivacyImpact
 
 def exiftool_findings(path: Path) -> tuple[list[Finding], list[str]]:
     """Optional local enrichment. Never installs or downloads anything."""
+    if subprocess is None:
+        return [], []
     exe = shutil.which("exiftool")
     if not exe:
         return [], []
