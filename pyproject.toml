@@ -19,6 +19,10 @@ dependencies = [
 [project.scripts]
 databreaker = "databreaker.__main__:main"
 
+[tool.setuptools.packages.find]
+include = ["databreaker*"]
+exclude = ["tests*", "web*", "scripts*", "node_modules*"]
+
 [tool.setuptools.package-data]
 databreaker = ["static/**/*"]
 
