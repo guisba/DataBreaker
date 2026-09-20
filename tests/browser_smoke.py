@@ -60,14 +60,23 @@ def main() -> None:
             browser = p.chromium.launch(headless=True)
             page = browser.new_page(viewport={"width": 1440, "height": 1000})
             console_errors: list[str] = []
+            request_failures: list[str] = []
             page.on("pageerror", lambda exc: console_errors.append(str(exc)))
+            page.on("requestfailed", lambda req: request_failures.append(f"{req.url}: {req.failure}"))
             page.goto(base_url, wait_until="domcontentloaded", timeout=60_000)
             page.locator("#fileInput").set_input_files([str(png), str(jpg)])
 
             page.wait_for_function(
-                "document.querySelectorAll('.file-tab').length === 2",
+                """() => document.querySelectorAll('.file-tab').length === 2 ||
+                    !document.querySelector('#errorBanner').classList.contains('hidden')""",
                 timeout=180_000,
             )
+            if not page.locator("#errorBanner").evaluate("(el) => el.classList.contains('hidden')"):
+                raise AssertionError(
+                    "Browser engine failed before image tabs were created: "
+                    + page.locator("#errorBanner").inner_text()
+                    + (" | request failures: " + " ; ".join(request_failures) if request_failures else "")
+                )
             page.wait_for_selector("#resultPanel:not(.hidden)", timeout=30_000)
             assert page.locator("#errorBanner").evaluate(
                 "(el) => el.classList.contains('hidden')"
@@ -86,6 +95,7 @@ def main() -> None:
             href = page.locator("#downloadBtn").get_attribute("href") or ""
             assert href.startswith("blob:"), href
             assert not console_errors, console_errors
+            assert not request_failures, request_failures
             browser.close()
 
 
