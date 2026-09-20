@@ -78,7 +78,10 @@
               <button class="filter" data-filter="origin" data-i18n="origin">Origin</button>
               <button class="filter" data-filter="unknown" data-i18n="unknown">Unknown</button>
             </div>
-            <a id="jsonReport" class="ghost small" href="#" data-i18n="exportJson">Export JSON</a>
+            <div class="top-actions">
+              <button id="copyAllBtn" class="ghost small" type="button" data-i18n="copyAll">Copy all</button>
+              <a id="jsonReport" class="ghost small" href="#" data-i18n="exportJson">Export JSON</a>
+            </div>
           </div>
           <div id="findings"></div>
         </div>
@@ -114,7 +117,7 @@
     </section>
   </main>
 
-  <footer><span>DataBreaker / <span id="footerVersion">v0.2</span></span><span data-i18n="footer">Privacy tooling should explain its limits.</span></footer>
+  <footer><span>DataBreaker / <span id="footerVersion">v0.3</span></span><span data-i18n="footer">Privacy tooling should explain its limits.</span></footer>
   <script src="/static/app.js" defer></script>
 </body>
 </html>
