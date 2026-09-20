@@ -28,6 +28,7 @@ def test_local_exiftool_uses_absolute_all_mode_and_keeps_file_fields(monkeypatch
             "CBOR:ActionsSoftwareAgentVersion": 2,
             "CBOR:ActionsDigitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
             "CBOR:Claim_Generator_InfoName": "OpenAI Media Service API",
+            "ExifTool:NewUUID": "01234567-89AB-CDEF-0123-456789ABCDEF",
         }]
         return SimpleNamespace(
             stdout=json.dumps(payload).encode(),
@@ -53,6 +54,7 @@ def test_local_exiftool_uses_absolute_all_mode_and_keeps_file_fields(monkeypatch
         "ActionsSoftwareAgentVersion",
         "ActionsDigitalSourceType",
         "Claim_Generator_InfoName",
+        "NewUUID",
     } <= names
 
     cmd = captured["cmd"]
@@ -66,6 +68,10 @@ def test_local_exiftool_uses_absolute_all_mode_and_keeps_file_fields(monkeypatch
     fs = next(f for f in findings if f.name == "FileAccessDate")
     assert fs.category == "filesystem/runtime metadata"
     assert "processing environment" in fs.explanation
+
+    generated = next(f for f in findings if f.name == "NewUUID")
+    assert generated.category == "generated/runtime metadata"
+    assert generated.privacy_impact.value == "low"
 
     c2pa = next(f for f in findings if f.name == "JUMDType")
     assert c2pa.category == "cryptographic provenance"
