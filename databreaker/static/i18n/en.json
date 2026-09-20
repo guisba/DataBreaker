@@ -13,7 +13,7 @@
   "scanSession": "SCAN SESSION",
   "addFiles": "+ Add files",
   "scanning": "Mapping metadata surfaces…",
-  "scanningSub": "Parsing containers, provenance and origin indicators",
+  "scanningSub": "Parsing full ExifTool inventory, containers, provenance and origin indicators",
   "findings": "findings",
   "all": "All",
   "critical": "Critical",
@@ -89,5 +89,8 @@
   "hostedLimitText": "Hosted limit: files up to 4 MB · temporary server processing · no DataBreaker telemetry",
   "browserModeTitle": "Private browser mode",
   "browserModeText": "Files are processed inside your browser with WebAssembly and are not uploaded to a DataBreaker backend.",
-  "browserLimitText": "Browser-only processing · no server upload · practical limits depend on browser memory"
+  "browserLimitText": "Browser-only processing · no server upload · practical limits depend on browser memory",
+  "copyAll": "Copy all",
+  "copied": "Copied",
+  "copyFailed": "Could not copy metadata to the clipboard."
 }
