@@ -1,0 +1,76 @@
+name: Release v0.1.0
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/release.yml"
+      - "pyproject.toml"
+      - "databreaker/**"
+      - "requirements*.txt"
+      - "README.md"
+      - "docs/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      TAG: v0.1.0
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Check whether release already exists
+        id: release
+        shell: bash
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build release artifacts
+        if: steps.release.outputs.exists != 'true'
+        shell: bash
+        run: |
+          mkdir -p dist
+          python -m pip wheel . --no-deps -w dist
+          git archive --format=tar.gz -o "dist/DataBreaker-${TAG}-source.tar.gz" HEAD
+          sha256sum dist/* | tee dist/SHA256SUMS.txt
+
+      - name: Publish GitHub Release
+        if: steps.release.outputs.exists != 'true'
+        shell: bash
+        run: |
+          gh release create "$TAG" dist/*             --target "$GITHUB_SHA"             --title "DataBreaker v0.1.0"             --notes-file - <<'EOF'
+          # DataBreaker v0.1.0
+
+          First public release of DataBreaker: a local-first metadata privacy analyzer, cleaner, normalizer and provenance inspector.
+
+          ## Highlights
+
+          - JPEG, PNG, WebP, SVG, PDF, OOXML, ZIP/TAR, audio and MP4/MOV/M4A analysis
+          - Safe Clean, Deep Clean and Clean Everything policies
+          - independent post-clean verification and Original → Sanitized diff
+          - EN / PT-BR interface
+          - AI workflow and C2PA/provenance indicators with conservative confidence labels
+          - no telemetry and no automatic remote file processing
+          - automated test coverage and CI across Python 3.11, 3.12 and 3.13
+
+          ## Downloads
+
+          The release includes a Python wheel, a source archive and SHA-256 checksums.
+
+          Documentation: https://caveras-personal-organization.gitbook.io/databreaker/
+          EOF
