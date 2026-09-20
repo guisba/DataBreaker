@@ -97,9 +97,9 @@ Optional ExifTool support is local and read-only. DataBreaker does **not** autom
 
 ## Public browser edition
 
-The browser-only edition is published at ****. It runs the DataBreaker Python engine inside a WebAssembly/Pyodide worker. Files remain in the browser's local memory/filesystem rather than being uploaded to an application server. The first visit downloads the Python runtime and parser dependencies, so startup can take longer than the local edition.
+The browser-only Vercel build is ready in the repository, but this README does not publish a production URL until that deployment has been verified. It runs the DataBreaker Python engine inside a WebAssembly/Pyodide worker. Files remain in the browser's local memory/filesystem rather than being uploaded to an application server.
 
-Browser memory, device performance, supported WebAssembly features and third-party runtime/CDN availability are practical limits; the project does not advertise literally unlimited processing.
+The Vercel build vendors the Pyodide core runtime with the site, so JPEG/PNG startup does not depend on a third-party runtime CDN. Formats that need optional Python parsers, such as PDF or audio, can still fetch those parser packages on demand. Browser memory, device performance and supported WebAssembly features remain practical limits; the project does not advertise literally unlimited processing.
 
 See [PRIVACY.md](PRIVACY.md) and [SECURITY.md](SECURITY.md) for the execution and threat models.
 
