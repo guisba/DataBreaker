@@ -196,7 +196,7 @@ function mergeInventory(scan,row,version){
     engine:'ExifTool-WASM',
     version,
     mode:'all',
-    args:['-json','-a','-u','-G0:4','-s','-ee3','-api','RequestAll=3','-api','LargeFileSupport=1'],
+    args:['-json','-m','-q','-q','-a','-u','-G0:4','-s','-ee3','-api','RequestAll=3','-api','LargeFileSupport=1'],
     fields:inventory.length
   };
   return scan;
