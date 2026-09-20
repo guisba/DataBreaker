@@ -1,0 +1,12 @@
+{
+  "name": "databreaker-web",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@6over3/zeroperl-ts": "1.0.10",
+    "@uswriting/exiftool": "1.0.9"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.10"
+  }
+}
