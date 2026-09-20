@@ -6,6 +6,8 @@
 
 English · Português (Brasil) &nbsp; | &nbsp; No telemetry &nbsp; | &nbsp; Files stay on your machine
 
+[Public documentation](https://caveras-personal-organization.gitbook.io/databreaker/) · [Releases](https://github.com/guisba/DataBreaker/releases)
+
 </div>
 
 ![DataBreaker interface](docs/screenshot.webp)
