@@ -1,0 +1,9 @@
+# DataBreaker production web deployment is browser-only/static.
+# Keep local FastAPI and test entrypoints out of Vercel's source detection.
+databreaker/app.py
+databreaker/__main__.py
+tests/
+docs/
+.venv/
+__pycache__/
+*.pyc
