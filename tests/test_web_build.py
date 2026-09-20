@@ -79,9 +79,10 @@ def test_image_upload_path_does_not_require_optional_parsers():
 def test_finding_filters_bind_to_all_buttons():
     root = Path(__file__).parents[1]
     app = (root / "databreaker" / "static" / "app.js").read_text(encoding="utf-8")
-    assert ";$('.filter').forEach" in app
-    assert ";$('.filter').forEach" not in app
-
+    good = ";" + "$" + "$" + "('.filter').forEach"
+    bad = ";" + "$" + "('.filter').forEach"
+    assert good in app
+    assert bad not in app
 
 def test_scan_errors_are_isolated_per_file():
     root = Path(__file__).parents[1]
