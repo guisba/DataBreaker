@@ -102,3 +102,12 @@ def test_pyodide_core_download_is_pinned_by_checksum():
     assert "pyodide-core-{PYODIDE_VERSION}.tar.bz2" in builder
     assert 'PYODIDE_CORE_SHA256 = "2abdcc2e35208af406e07724cffa85bc582ced97e9028383ecf5462541393f95"' in builder
     assert "const PYODIDE_BASE='./pyodide/';" in builder
+
+
+def test_pyodide_uses_module_worker():
+    root = Path(__file__).parents[1]
+    app = (root / "databreaker" / "static" / "app.js").read_text(encoding="utf-8")
+    worker = (root / "databreaker" / "static" / "worker.js").read_text(encoding="utf-8")
+    assert "new Worker('./worker.js',{type:'module'})" in app
+    assert "pyodide.mjs" in worker
+    assert "importScripts(" not in worker
