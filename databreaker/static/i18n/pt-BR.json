@@ -13,7 +13,7 @@
   "scanSession": "SESSÃO DE ANÁLISE",
   "addFiles": "+ Adicionar arquivos",
   "scanning": "Mapeando superfícies de metadados…",
-  "scanningSub": "Analisando contêineres, proveniência e indicadores de origem",
+  "scanningSub": "Lendo o inventário completo do ExifTool, contêineres, proveniência e indicadores de origem",
   "findings": "achados",
   "all": "Todos",
   "critical": "Críticos",
@@ -207,5 +207,8 @@
   "hostedLimitText": "Limite hospedado: arquivos de até 4 MB · processamento temporário no servidor · sem telemetria do DataBreaker",
   "browserModeTitle": "Modo privado no navegador",
   "browserModeText": "Os arquivos são processados dentro do seu navegador com WebAssembly e não são enviados a um backend do DataBreaker.",
-  "browserLimitText": "Processamento somente no navegador · sem upload para servidor · limites práticos dependem da memória do navegador"
+  "browserLimitText": "Processamento somente no navegador · sem upload para servidor · limites práticos dependem da memória do navegador",
+  "copyAll": "Copiar tudo",
+  "copied": "Copiado",
+  "copyFailed": "Não foi possível copiar os metadados para a área de transferência."
 }
