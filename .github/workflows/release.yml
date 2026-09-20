@@ -55,7 +55,7 @@ jobs:
 
           path = Path("/tmp/release-notes.md")
           body = path.read_text(encoding="utf-8")
-          note = "Public browser edition: Vercel deployment pending verification."
+          note = "Public browser edition: https://databreaker-guisba.vercel.app/"
           pattern = r"^Public browser edition:.*$"
           if re.search(pattern, body, flags=re.MULTILINE):
               body = re.sub(pattern, note, body, count=1, flags=re.MULTILINE)
@@ -80,4 +80,4 @@ jobs:
             --target "$GITHUB_SHA" \
             --title "DataBreaker $TAG" \
             --generate-notes \
-            --notes "Public browser edition: Vercel deployment pending verification.\n\nDocumentation: https://caveras-personal-organization.gitbook.io/databreaker/"
+            --notes "Public browser edition: https://databreaker-guisba.vercel.app/\n\nDocumentation: https://caveras-personal-organization.gitbook.io/databreaker/"
