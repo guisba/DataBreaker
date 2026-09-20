@@ -26,5 +26,3 @@ databreaker = ["static/**/*"]
 testpaths = ["tests"]
 pythonpath = ["."]
 
-[tool.vercel]
-entrypoint = "databreaker.app:app"
