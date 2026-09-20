@@ -10,7 +10,7 @@ A compact header shows the DataBreaker mark and name on the left. On the right a
 
 The hero headline reads “See what your files say about you.” / “Veja o que seus arquivos revelam sobre você.” A short paragraph explains that the tool analyzes hidden metadata, origin fingerprints and provenance. Directly below it, a small status strip summarizes the execution model, telemetry status and the automatic rescan after cleaning.
 
-On the public GitHub Pages edition, a green browser-mode notice explains that files are processed inside the browser with WebAssembly and are not uploaded to a DataBreaker backend. If the FastAPI application is deployed to a remote server instead, an amber hosted-mode notice explains that files are temporarily sent to that server and recommends the local/browser-only modes for maximum privacy.
+On the public Vercel edition, a green browser-mode notice explains that files are processed inside the browser with WebAssembly and are not uploaded to a DataBreaker backend. If the FastAPI application is deployed to a remote server instead, an amber hosted-mode notice explains that files are temporarily sent to that server and recommends the local/browser-only modes for maximum privacy.
 
 ## File drop area
 

@@ -6,15 +6,17 @@
 
 English · Português (Brasil) &nbsp; | &nbsp; No telemetry &nbsp; | &nbsp; Files stay on your machine
 
-[Use DataBreaker online](https://databreaker-pcdnak.v2.appdeploy.ai/) · [Public documentation](https://caveras-personal-organization.gitbook.io/databreaker/) · [Releases](https://github.com/guisba/DataBreaker/releases)
+[Public documentation](https://caveras-personal-organization.gitbook.io/databreaker/) · [Releases](https://github.com/guisba/DataBreaker/releases)
 
 </div>
 
 ## Interface preview
 
-DataBreaker uses a dark-first, single-page workflow: a large drag-and-drop area opens into a scan workspace with file tabs, a summary card, grouped metadata findings, three cleaning-policy cards, normalization controls, an **Original → Sanitized** verification panel and download actions. The public browser edition also shows a green privacy notice confirming that the file is processed inside the browser.
+![DataBreaker v0.2 black/white interface](docs/preview-v0.2.jpg)
 
-[Read the full accessible interface description](docs/INTERFACE.md) · [Open the live browser edition](https://databreaker-pcdnak.v2.appdeploy.ai/)
+DataBreaker v0.2 uses a restrained black/white interface with an optional red/black theme. The workflow stays focused on evidence instead of decorative effects: drop files → inspect findings → choose a cleaning policy → verify **Original → Sanitized**.
+
+[Read the full accessible interface description](docs/INTERFACE.md)
 
 DataBreaker answers a practical question before you share a file: **what can this file reveal about where it came from?** It inspects ordinary metadata, obscure/custom blocks, origin fingerprints, AI workflow traces and cryptographic provenance, explains the evidence, cleans what it can safely rewrite, then reopens and rescans the output instead of trusting a “success” return code.
 
@@ -22,7 +24,7 @@ DataBreaker answers a practical question before you share a file: **what can thi
 
 ## Features
 
-- Drag-and-drop multi-file workflow with a dark, responsive EN/PT-BR interface.
+- Drag-and-drop multi-file workflow with restrained black/white and red/black themes, responsive EN/PT-BR UI, and persistent theme preference.
 - Origin/Fingerprint Analyzer with evidence, source location, privacy impact and confidence levels.
 - Safe Clean, Deep Clean and Clean Everything policies.
 - Independent post-clean validation + second metadata scan + before/after diff.
@@ -95,7 +97,7 @@ Optional ExifTool support is local and read-only. DataBreaker does **not** autom
 
 ## Public browser edition
 
-The browser-only edition is published at **https://databreaker-pcdnak.v2.appdeploy.ai/**. It runs the DataBreaker Python engine inside a WebAssembly/Pyodide worker. Files remain in the browser's local memory/filesystem rather than being uploaded to an application server. The first visit downloads the Python runtime and parser dependencies, so startup can take longer than the local edition.
+The browser-only edition is published at ****. It runs the DataBreaker Python engine inside a WebAssembly/Pyodide worker. Files remain in the browser's local memory/filesystem rather than being uploaded to an application server. The first visit downloads the Python runtime and parser dependencies, so startup can take longer than the local edition.
 
 Browser memory, device performance, supported WebAssembly features and third-party runtime/CDN availability are practical limits; the project does not advertise literally unlimited processing.
 
