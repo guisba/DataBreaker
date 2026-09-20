@@ -4,6 +4,9 @@ import zeroperlWasm from "@lilohuang/zeroperl-ts/zeroperl.wasm";
 export const EXIFTOOL_VERSION = "13.59";
 export const EXIFTOOL_ALL_ARGS = Object.freeze([
   "-json",
+  "-m",
+  "-q",
+  "-q",
   "-a",
   "-u",
   "-G0:4",
