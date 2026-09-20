@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>DataBreaker — Metadata Privacy Analyzer</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="DataBreaker home">
+      <span class="brand-mark" aria-hidden="true"><span></span></span>
+      <span>DataBreaker</span>
+    </a>
+    <nav class="top-actions" aria-label="Application controls">
+      <button id="langBtn" class="ghost small" type="button">PT-BR</button>
+      <a class="ghost small" href="https://github.com/guisba/DataBreaker" target="_blank" rel="noreferrer">GitHub</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow"><span class="pulse"></span><span data-i18n="eyebrow">LOCAL-FIRST METADATA PRIVACY</span></div>
+      <h1><span data-i18n="heroA">See what your files</span> <em data-i18n="heroB">say about you.</em></h1>
+      <p data-i18n="heroText">Analyze hidden metadata, origin fingerprints and provenance. Clean what can be safely removed, then verify the output independently.</p>
+      <div class="privacy-strip"><span>●</span><strong data-i18n="localOnly">Files stay on this device</strong><span class="sep">/</span><span data-i18n="noTelemetry">No telemetry</span><span class="sep">/</span><span data-i18n="verifyAfter">Automatic rescan after cleaning</span></div>
+    </section>
+
+    <section id="dropzone" class="dropzone" tabindex="0" role="button" aria-describedby="dropHint">
+      <input id="fileInput" type="file" multiple hidden>
+      <div class="drop-orbit" aria-hidden="true"><div class="drop-core">+</div></div>
+      <h2 data-i18n="dropTitle">Drop files to break the metadata trail</h2>
+      <p id="dropHint" data-i18n="dropText">JPEG, PNG, WebP, SVG, PDF, Office, ZIP/TAR, audio, MP4/MOV, HEIF/AVIF and more</p>
+      <button class="primary" id="browseBtn" type="button" data-i18n="chooseFiles">Choose files</button>
+      <small data-i18n="limitText">Up to 20 files · 100 MB each · local processing</small>
+    </section>
+
+    <section id="workspace" class="workspace hidden" aria-live="polite">
+      <div class="workspace-head">
+        <div><span class="section-kicker" data-i18n="scanSession">SCAN SESSION</span><h2 id="sessionTitle">—</h2></div>
+        <button id="addFiles" class="ghost" type="button" data-i18n="addFiles">+ Add files</button>
+      </div>
+      <div id="fileTabs" class="file-tabs"></div>
+      <div id="scanState" class="scan-state hidden">
+        <div class="scanner"><i></i><i></i><i></i></div>
+        <div><strong data-i18n="scanning">Mapping metadata surfaces…</strong><span data-i18n="scanningSub">Parsing containers, provenance and origin indicators</span></div>
+      </div>
+      <div id="resultPanel" class="result-panel hidden">
+        <aside class="summary-card">
+          <div id="riskScore" class="risk-ring"><span>0</span><small data-i18n="findings">findings</small></div>
+          <div class="file-summary"><strong id="activeName">—</strong><span id="activeMeta">—</span><code id="activeHash">—</code></div>
+          <div id="validationBadge" class="badge"></div>
+        </aside>
+        <div class="details">
+          <div id="criticalBanner" class="critical-banner hidden"></div>
+          <div class="toolbar">
+            <div class="filter-group" role="tablist">
+              <button class="filter active" data-filter="all" data-i18n="all">All</button>
+              <button class="filter" data-filter="critical" data-i18n="critical">Critical</button>
+              <button class="filter" data-filter="origin" data-i18n="origin">Origin</button>
+              <button class="filter" data-filter="unknown" data-i18n="unknown">Unknown</button>
+            </div>
+            <a id="jsonReport" class="ghost small" href="#" data-i18n="exportJson">Export JSON</a>
+          </div>
+          <div id="findings"></div>
+        </div>
+      </div>
+
+      <section id="cleanPanel" class="clean-panel hidden">
+        <div class="section-title"><div><span class="section-kicker" data-i18n="cleaningPolicy">CLEANING POLICY</span><h3 data-i18n="chooseCleaning">Choose how far DataBreaker should go</h3></div></div>
+        <div class="mode-grid" role="radiogroup" aria-label="Cleaning mode">
+          <label class="mode-card selected"><input type="radio" name="mode" value="safe" checked><span class="mode-icon">◇</span><strong data-i18n="safeClean">Safe Clean</strong><p data-i18n="safeDesc">Common privacy metadata, lowest compatibility risk.</p></label>
+          <label class="mode-card"><input type="radio" name="mode" value="deep"><span class="mode-icon">◈</span><strong data-i18n="deepClean">Deep Clean</strong><p data-i18n="deepDesc">Adds uncommon and application-specific metadata.</p></label>
+          <label class="mode-card danger"><input type="radio" name="mode" value="everything"><span class="mode-icon">✦</span><strong data-i18n="everything">Clean Everything</strong><p data-i18n="everythingDesc">Aggressive removal of every known nonessential field that can be safely rewritten.</p></label>
+        </div>
+        <div class="profile-row">
+          <label for="profile" data-i18n="normalization">Normalization profile</label>
+          <select id="profile"><option value="compatibility" data-i18n="compatibility">Preserve Compatibility</option><option value="minimal" data-i18n="minimal">Minimal</option><option value="generic" data-i18n="generic">Generic</option><option value="custom" data-i18n="custom">Custom</option></select>
+          <span class="profile-note" data-i18n="profileNote">Profiles never fabricate signatures or real-world origin claims.</span>
+          <div id="customProfile" class="custom-profile hidden">
+            <label><input id="preserveColor" type="checkbox" checked> <span data-i18n="preserveColor">Preserve ICC/color profiles</span></label>
+            <label><input id="preserveTimes" type="checkbox"> <span data-i18n="preserveTimes">Preserve archive/package timestamps</span></label>
+          </div>
+        </div>
+        <div id="cleanWarning" class="policy-preview"></div><div id="policyTargets" class="profile-note"></div>
+        <button id="cleanBtn" class="primary wide" type="button" data-i18n="cleanVerify">Clean & verify output</button>
+      </section>
+
+      <section id="diffPanel" class="diff-panel hidden">
+        <div class="diff-head"><div><span class="section-kicker" data-i18n="verification">VERIFICATION</span><h3 data-i18n="beforeAfter">Original → Sanitized</h3></div><div id="verifyState" class="verify-state"></div></div>
+        <div class="stats" id="diffStats"></div>
+        <div id="remaining"></div>
+        <div class="download-row"><a id="downloadBtn" class="primary" href="#" data-i18n="downloadSanitized">Download sanitized file</a><a id="cleanReport" class="ghost" href="#" data-i18n="downloadReport">Download report JSON</a><a id="cleanReportText" class="ghost" href="#" data-i18n="downloadReportText">Download text report</a></div>
+      </section>
+    </section>
+  </main>
+
+  <footer><span>DataBreaker</span><span data-i18n="footer">Privacy tooling should explain its limits.</span></footer>
+  <script src="/static/app.js" defer></script>
+</body>
+</html>
