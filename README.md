@@ -22,7 +22,7 @@ DataBreaker answers a practical question before you share a file: **what can thi
 
 ## Features
 
-- Drag-and-drop multi-file workflow with a dark, responsive EN/PT-BR interface.
+- Drag-and-drop multi-file workflow with restrained black/white and red/black themes, responsive EN/PT-BR UI, and persistent theme preference.
 - Origin/Fingerprint Analyzer with evidence, source location, privacy impact and confidence levels.
 - Safe Clean, Deep Clean and Clean Everything policies.
 - Independent post-clean validation + second metadata scan + before/after diff.
