@@ -12,6 +12,7 @@ await build({
   target: ["es2022"],
   outfile: path.join(output, "exiftool-runtime.js"),
   loader: { ".wasm": "file", ".txt": "text" },
+  external: ["node:*"],
   assetNames: "exiftool/[name]-[hash]",
   logLevel: "info"
 });
