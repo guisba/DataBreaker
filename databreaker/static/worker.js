@@ -1,5 +1,6 @@
 const PYODIDE_VERSION='314.0.7';
-const PYODIDE_BASE=`https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`;
+const PYODIDE_CDN_BASE=`https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`;
+const PYODIDE_BASE=PYODIDE_CDN_BASE;
 const MODULES=[
   '__init__.py','detector.py','engine.py','explanations.py','external.py','fingerprint.py','models.py','report.py','security.py','tiff.py','xmp.py',
   'handlers/__init__.py','handlers/archive.py','handlers/audio.py','handlers/base.py','handlers/generic.py','handlers/iso_bmff.py','handlers/jpeg.py','handlers/ooxml.py','handlers/pdf.py','handlers/png.py','handlers/svg.py','handlers/webp.py'
@@ -19,7 +20,7 @@ async function loadSourceTree(){
 }
 async function init(){
   importScripts(`${PYODIDE_BASE}pyodide.js`);
-  pyodide=await loadPyodide({indexURL:PYODIDE_BASE});
+  pyodide=await loadPyodide({indexURL:PYODIDE_BASE,packageBaseUrl:PYODIDE_CDN_BASE});
   await loadSourceTree();
   await pyodide.runPythonAsync('from databreaker.engine import scan_file, clean_file; from databreaker.models import CleanMode, NormalizationProfile; from databreaker.report import json_report, text_report');
 }
