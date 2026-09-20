@@ -6,15 +6,13 @@
 
 English · Português (Brasil) &nbsp; | &nbsp; No telemetry &nbsp; | &nbsp; Files stay on your machine
 
-[Use DataBreaker online](https://guisba.github.io/DataBreaker/) · [Public documentation](https://caveras-personal-organization.gitbook.io/databreaker/) · [Releases](https://github.com/guisba/DataBreaker/releases)
+[Use the public browser app](https://guisba.github.io/DataBreaker/) · [Documentation](https://caveras-personal-organization.gitbook.io/databreaker/) · [Releases](https://github.com/guisba/DataBreaker/releases)
 
 </div>
 
-## Interface preview
+### Interface preview
 
-DataBreaker uses a dark-first, single-page workflow: a large drag-and-drop area opens into a scan workspace with file tabs, a summary card, grouped metadata findings, three cleaning-policy cards, normalization controls, an **Original → Sanitized** verification panel and download actions. The public browser edition also shows a green privacy notice confirming that the file is processed inside the browser.
-
-[Read the full accessible interface description](docs/INTERFACE.md) · [Open the live browser edition](https://guisba.github.io/DataBreaker/)
+DataBreaker uses a dark-first dashboard with a centered drag-and-drop area, a scan workspace with file tabs, a circular finding counter, grouped findings for critical exposure/origin/structural/unknown metadata, three cleaning-policy cards, normalization controls, and a final **Original → Sanitized** verification panel with download buttons. See [`docs/INTERFACE.md`](docs/INTERFACE.md) for the full accessible description.
 
 DataBreaker answers a practical question before you share a file: **what can this file reveal about where it came from?** It inspects ordinary metadata, obscure/custom blocks, origin fingerprints, AI workflow traces and cryptographic provenance, explains the evidence, cleans what it can safely rewrite, then reopens and rescans the output instead of trusting a “success” return code.
 
@@ -33,7 +31,7 @@ DataBreaker answers a practical question before you share a file: **what can thi
 - Optional **read-only local ExifTool enrichment** for proprietary MakerNotes and unknown tags.
 - AI workflow indicators for C2PA/Content Credentials, Stable Diffusion/AUTOMATIC1111-style parameters, ComfyUI-style prompt/workflow metadata and other documented signals.
 - Security limits for hostile files, archive traversal, decompression ratios, oversized metadata and malformed structures.
-- No analytics or behavioral telemetry. The local and browser-only editions do not upload file contents to a DataBreaker backend; a separately hosted server deployment is explicitly identified and uses temporary request-scoped processing.
+- No analytics or behavioral telemetry. The local app and public browser edition process file contents on-device; the public edition runs the Python engine inside the browser via Pyodide/WebAssembly.
 
 ## Supported formats
 
@@ -89,17 +87,17 @@ Evidence remains visible in the finding. `Software = Adobe Photoshop` is an appl
 
 ## Privacy model
 
-DataBreaker supports three clearly identified execution models. The public GitHub Pages edition runs the Python engine in the browser through Pyodide/WebAssembly, so selected file contents are not uploaded to a DataBreaker backend. The local edition runs FastAPI on `127.0.0.1` and keeps processing on the same machine. A separately hosted FastAPI deployment can use stateless request-scoped temporary storage, but that mode is not presented as equivalent to local/browser-only privacy. The application contains no analytics or behavioral telemetry.
+The desktop/local workflow runs a FastAPI process bound to `127.0.0.1`. In that mode, the browser UI uploads files only to the loopback process, so files stay on the machine.
+
+The public web edition runs the same core engine **inside the browser** through Pyodide/WebAssembly. Files are read into the browser's WebAssembly filesystem and are not intentionally uploaded to a DataBreaker application backend. The first use downloads the Python runtime and parser dependencies from public CDN/package infrastructure. For the strongest isolation or offline use, run the local edition.
 
 Optional ExifTool support is local and read-only. DataBreaker does **not** automatically call online AI-detection or remote C2PA verification services. Content-level watermarks such as SynthID are not ordinary metadata and are not claimed as removable.
 
-## Public browser edition
+## Public web edition
 
-The browser-only edition is published at **https://guisba.github.io/DataBreaker/**. It runs the DataBreaker Python engine inside a WebAssembly/Pyodide worker. Files remain in the browser's local memory/filesystem rather than being uploaded to an application server. The first visit downloads the Python runtime and parser dependencies, so startup can take longer than the local edition.
+**Use DataBreaker in the browser:** https://guisba.github.io/DataBreaker/
 
-Browser memory, device performance, supported WebAssembly features and third-party runtime/CDN availability are practical limits; the project does not advertise literally unlimited processing.
-
-See [PRIVACY.md](PRIVACY.md) and [SECURITY.md](SECURITY.md) for the execution and threat models.
+The GitHub Pages edition is browser-only: the metadata engine runs locally in WebAssembly and file contents are not intentionally sent to a DataBreaker backend. Runtime/package downloads still contact GitHub Pages, jsDelivr and Python package infrastructure, so normal web access logs may exist. See [`PRIVACY.md`](PRIVACY.md) for the execution-model details.
 
 ## Install and run
 
@@ -141,6 +139,8 @@ The UI never displays “100% clean”. A successful result means the requested 
 
 ## Security model
 
+See also: [`SECURITY.md`](SECURITY.md) and [`PRIVACY.md`](PRIVACY.md).
+
 DataBreaker treats files as hostile. Current protections include:
 
 - 100 MB default per-file limit and 20-file upload limit.
@@ -167,7 +167,7 @@ python -m pytest -q
 python -m databreaker
 ```
 
-Architecture details are in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). The source/specification review and product limitations are in [`docs/METADATA_RESEARCH.md`](docs/METADATA_RESEARCH.md). See also [`PRIVACY.md`](PRIVACY.md), [`SECURITY.md`](SECURITY.md), and the accessible [`docs/INTERFACE.md`](docs/INTERFACE.md).
+Architecture details are in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). The source/specification review and product limitations are in [`docs/METADATA_RESEARCH.md`](docs/METADATA_RESEARCH.md).
 
 ## Testing
 
