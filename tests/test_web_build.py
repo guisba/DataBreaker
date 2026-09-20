@@ -111,3 +111,19 @@ def test_pyodide_uses_module_worker():
     assert "new Worker('./worker.js',{type:'module'})" in app
     assert "pyodide.mjs" in worker
     assert "importScripts(" not in worker
+
+
+def test_hosting_metadata_has_no_stale_deployment_references():
+    root = Path(__file__).parents[1]
+    readme = (root / "README.md").read_text(encoding="utf-8").lower()
+    privacy = (root / "PRIVACY.md").read_text(encoding="utf-8").lower()
+    pyproject = (root / "pyproject.toml").read_text(encoding="utf-8").lower()
+    release = (root / ".github" / "workflows" / "release.yml").read_text(encoding="utf-8").lower()
+
+    assert "****" not in readme
+    assert "appdeploy" not in readme
+    assert "appdeploy" not in privacy
+    assert "appdeploy" not in release
+    assert "[tool.vercel]" not in pyproject
+    assert "vercel deployment pending verification" in release
+    assert "vendors the pyodide core runtime" in privacy
