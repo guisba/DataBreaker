@@ -43,8 +43,9 @@ def make_jpeg(path: Path) -> None:
     )
     app1 = b"Exif\x00\x00" + tiff
     segment = b"\xff\xe1" + struct.pack(">H", len(app1) + 2) + app1
+    sof0 = b"\xff\xc0\x00\x0b\x08\x00\x01\x00\x01\x01\x01\x11\x00"
     sos = b"\xff\xda\x00\x08\x01\x01\x00\x00\x3f\x00"
-    path.write_bytes(b"\xff\xd8" + segment + sos + b"\x11\x22\x33\xff\xd9")
+    path.write_bytes(b"\xff\xd8" + segment + sof0 + sos + b"\x11\x22\x33\xff\xd9")
 
 
 def main() -> None:
