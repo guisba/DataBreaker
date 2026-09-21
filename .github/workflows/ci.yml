@@ -54,9 +54,14 @@ jobs:
         run: |
           python -m http.server 8765 --directory web-dist > /tmp/databreaker-http.log 2>&1 &
           echo $! > /tmp/databreaker-http.pid
+      - name: Fetch pinned modern C2PA regression asset
+        run: |
+          curl --fail --location --retry 3             https://raw.githubusercontent.com/contentauth/example-assets/c37f93e115289ac1ef00f899a860e6e08ab9886f/images/ChatGPT_Image.png             --output /tmp/ChatGPT_Image.png
+          test -s /tmp/ChatGPT_Image.png
       - name: Smoke test full metadata inventory, C2PA, and image cleaning
         env:
           DATABREAKER_E2E_URL: http://127.0.0.1:8765/
+          DATABREAKER_MODERN_C2PA_FIXTURE: /tmp/ChatGPT_Image.png
         run: python tests/browser_smoke.py
       - name: Show static-server log on failure
         if: failure()
