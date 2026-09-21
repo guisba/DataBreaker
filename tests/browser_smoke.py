@@ -24,6 +24,7 @@ def make_png(path: Path) -> None:
         PNG_SIG
         + chunk(b"IHDR", ihdr)
         + chunk(b"tEXt", b"Author\x00Alice")
+        + chunk(b"tEXt", b"Author\x00Bob")
         + chunk(b"IDAT", zlib.compress(raw))
         + chunk(b"IEND", b"")
     )
@@ -89,6 +90,8 @@ def main() -> None:
             png_text = page.locator("#findings").inner_text()
             for field in ("Author", "FileName", "FileType", "MIMEType", "ImageWidth", "ImageHeight", "BitDepth", "Compression"):
                 assert field in png_text, (field, png_text)
+            assert "Alice" in png_text, png_text
+            assert "Bob" in png_text, png_text
 
             page.locator(".file-tab").nth(1).click()
             page.wait_for_timeout(100)
