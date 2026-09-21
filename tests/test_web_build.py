@@ -127,7 +127,10 @@ def test_hosting_metadata_has_no_stale_deployment_references():
     assert "appdeploy" not in privacy
     assert "appdeploy" not in release
     assert "[tool.vercel]" not in pyproject
-    assert "https://databreaker-guisba.vercel.app/" in release
+    assert "https://databreaker-ashy.vercel.app/" in release
+    assert "https://databreaker-ashy.vercel.app/" in readme
+    assert "databreaker-guisba.vercel.app" not in release
+    assert "databreaker-guisba.vercel.app" not in readme
     assert "vendors the pyodide core runtime" in privacy
 
 
