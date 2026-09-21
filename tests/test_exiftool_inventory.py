@@ -28,6 +28,8 @@ def test_local_exiftool_uses_absolute_all_mode_and_keeps_file_fields(monkeypatch
             "CBOR:ActionsSoftwareAgentVersion": 2,
             "CBOR:ActionsDigitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
             "CBOR:Claim_Generator_InfoName": "OpenAI Media Service API",
+            "PNG:Copy0:Author": "Alice",
+            "PNG:Copy1:Author": "Bob",
             "ExifTool:NewUUID": "01234567-89AB-CDEF-0123-456789ABCDEF",
         }]
         return SimpleNamespace(
@@ -54,6 +56,7 @@ def test_local_exiftool_uses_absolute_all_mode_and_keeps_file_fields(monkeypatch
         "ActionsSoftwareAgentVersion",
         "ActionsDigitalSourceType",
         "Claim_Generator_InfoName",
+        "Author",
         "NewUUID",
     } <= names
 
@@ -76,6 +79,11 @@ def test_local_exiftool_uses_absolute_all_mode_and_keeps_file_fields(monkeypatch
     c2pa = next(f for f in findings if f.name == "JUMDType")
     assert c2pa.category == "cryptographic provenance"
     assert c2pa.privacy_impact.value == "medium"
+
+    duplicate_authors = [f for f in findings if f.name == "Author"]
+    assert len(duplicate_authors) == 2
+    assert {f.value for f in duplicate_authors} == {"Alice", "Bob"}
+    assert {f.raw_name for f in duplicate_authors} == {"PNG:Copy0:Author", "PNG:Copy1:Author"}
 
 
 def test_detector_recognizes_pics_io_baseline_extensions(tmp_path: Path):
