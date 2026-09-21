@@ -1,12 +1,28 @@
 # Metadata and provenance research
 
-This document records the technical basis for DataBreaker 0.1. It is deliberately conservative: metadata ecosystems are open-ended, proprietary MakerNotes evolve, and some provenance is embedded in media content rather than removable metadata. “No known sensitive metadata detected” is not equivalent to proof that a file has no identifying signal.
+This document records the technical basis for DataBreaker 0.3. It is deliberately conservative: metadata ecosystems are open-ended, proprietary MakerNotes evolve, and some provenance is embedded in media content rather than removable metadata. “No known sensitive metadata detected” is not equivalent to proof that a file has no identifying signal.
+
+## Full-inventory baseline
+
+DataBreaker 0.3 uses ExifTool 13.59 as its broad metadata inventory baseline in the public browser edition, bundled through WebAssembly/ZeroPerl. The inventory command enables duplicate tags (`-a`), unknown tags (`-u`), unique group-qualified JSON keys (`-G0:4`), deep embedded-document extraction (`-ee3`) and `RequestAll=3`. The local native-ExifTool integration uses the same extraction strategy.
+
+This is intentionally different from maintaining a finite list of "supported metadata fields": ExifTool-decoded fields are surfaced even when DataBreaker does not yet have a semantic explanation for them. Unknown and proprietary tags remain visible raw. DataBreaker native parsers then add risk/origin interpretation and provide conservative writers for formats where sanitization can be verified.
+
+Pics.io's public metadata viewers are used as a product parity baseline for common families such as JPEG/PNG/GIF/WebP/JFIF, PDF, common camera RAW formats, and MP4/MOV/M4V. DataBreaker is not affiliated with Pics.io; parity means the product should not omit an ExifTool-visible metadata field merely because it is not part of DataBreaker's native parser vocabulary.
+
+ExifTool's `File*`/System values require special handling. Access time, inode-change time and permissions describe filesystem state, not necessarily bytes embedded in the source asset. They are displayed, but categorized as filesystem/runtime metadata so browser/temp-file values are not misrepresented as original embedded metadata.
+
+Sources:
+- ExifTool application documentation: https://exiftool.org/exiftool_pod.html
+- ExifTool tag tables: https://exiftool.org/TagNames/
+- ExifTool C2PA/JUMBF tags: https://exiftool.org/TagNames/Jpeg2000.html
+- Pics.io Metadata Viewer: https://pics.io/metadata-viewer
 
 ## Images
 
 ### EXIF / TIFF / MakerNotes
 
-EXIF uses TIFF-style Image File Directories (IFDs). Privacy-relevant fields include device make/model, software, timestamps and timezone offsets, GPS IFDs, camera owner, body/lens serials, image unique IDs and MakerNotes. MakerNotes are manufacturer-specific and can be offset-sensitive. DataBreaker’s built-in TIFF reader extracts common fields and records unrecognized tags; optional local ExifTool enrichment exposes many more vendor-specific tags.
+EXIF uses TIFF-style Image File Directories (IFDs). Privacy-relevant fields include device make/model, software, timestamps and timezone offsets, GPS IFDs, camera owner, body/lens serials, image unique IDs and MakerNotes. MakerNotes are manufacturer-specific and can be offset-sensitive. DataBreaker’s built-in TIFF reader extracts common fields and records unrecognized tags; the v0.3 full-inventory layer also exposes ExifTool-decoded vendor-specific, duplicate and unknown tags in both browser and local workflows.
 
 ExifTool’s documentation is especially important for cleaning policy: it warns that Make/Model can be needed to interpret MakerNotes and that careless MakerNote rewriting can damage interpretation. DataBreaker therefore avoids pretending that generic tag deletion is always safe for RAW or proprietary camera structures.
 
@@ -199,12 +215,12 @@ A signed/validated C2PA assertion naming a claim generator is stronger evidence 
 
 ## Current technical limitations
 
-- No software can guarantee discovery/removal of every proprietary or steganographic signal.
+- DataBreaker exposes every field ExifTool 13.59 reports plus unknown structures found by native parsers, but no software can guarantee semantic discovery/removal of every future proprietary or steganographic signal.
 - Content watermarks such as SynthID are outside ordinary metadata cleaning.
 - HEIF/AVIF rewriting is disabled in 0.1 to avoid unsafe item-table rewrites.
 - Matroska/WebM and 7z are detected but not deeply cleaned in the minimal dependency set.
 - PDF rewrites can invalidate signatures and can discard byte-level incremental history; visible/rendered equivalence is not cryptographic equivalence.
 - Office comments/revisions/custom XML may be content or functional state, so they are not silently removed.
 - ICC/color data can affect rendering; compatibility profiles preserve it.
-- ExifTool enrichment is optional and read-only; findings found only by ExifTool are not automatically claimed as removable by DataBreaker’s built-in writers.
+- The browser full-inventory layer uses ExifTool 13.59 read-only; the local edition uses a native ExifTool executable when available. Findings found only by ExifTool are not automatically claimed as removable by DataBreaker’s built-in writers.
 - A file with no recognized AI metadata may still have been generated or edited by AI.

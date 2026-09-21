@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import shutil
+import subprocess
 import tarfile
 import tempfile
 import urllib.request
@@ -66,7 +67,7 @@ def _download_pyodide_core(destination: Path) -> None:
             raise RuntimeError(f"Pyodide core archive missing required files: {sorted(missing)}")
 
 
-def build(output: Path, *, vendor_pyodide: bool = False) -> Path:
+def build(output: Path, *, vendor_pyodide: bool = False, vendor_exiftool: bool = False) -> Path:
     if output.exists():
         shutil.rmtree(output)
     output.mkdir(parents=True)
@@ -93,6 +94,17 @@ def build(output: Path, *, vendor_pyodide: bool = False) -> Path:
 
     shutil.copytree(STATIC / "i18n", output / "i18n")
 
+    if vendor_exiftool:
+        subprocess.run(
+            ["node", "scripts/build_exiftool.mjs", str(output)],
+            cwd=ROOT,
+            check=True,
+        )
+        if not (output / "exiftool-runtime.js").is_file():
+            raise RuntimeError("ExifTool browser bundle was not generated")
+        if not any((output / "exiftool").glob("*.wasm")):
+            raise RuntimeError("ExifTool ZeroPerl WASM asset was not generated")
+
     target_pkg = output / "python" / "databreaker"
     shutil.copytree(PACKAGE, target_pkg)
     shutil.rmtree(target_pkg / "static", ignore_errors=True)
@@ -113,8 +125,17 @@ def main() -> None:
         action="store_true",
         help="Bundle the verified Pyodide core so uploads do not depend on a runtime CDN.",
     )
+    parser.add_argument(
+        "--vendor-exiftool",
+        action="store_true",
+        help="Bundle ExifTool/ZeroPerl WASM so full metadata inventory runs locally in the browser.",
+    )
     args = parser.parse_args()
-    build(Path(args.output).resolve(), vendor_pyodide=args.vendor_pyodide)
+    build(
+        Path(args.output).resolve(),
+        vendor_pyodide=args.vendor_pyodide,
+        vendor_exiftool=args.vendor_exiftool,
+    )
 
 
 if __name__ == "__main__":

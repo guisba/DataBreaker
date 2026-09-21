@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "databreaker"
-version = "0.2.0"
+version = "0.3.0"
 description = "Local-first metadata analyzer, cleaner, normalizer, and provenance inspector."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -18,6 +18,10 @@ dependencies = [
 
 [project.scripts]
 databreaker = "databreaker.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["databreaker*"]
+exclude = ["tests*", "web*", "scripts*", "node_modules*"]
 
 [tool.setuptools.package-data]
 databreaker = ["static/**/*"]

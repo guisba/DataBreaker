@@ -18,6 +18,8 @@ def detect(path: Path) -> Detection:
         return Detection("jpeg", "image/jpeg")
     if head.startswith(b"\x89PNG\r\n\x1a\n"):
         return Detection("png", "image/png")
+    if head.startswith((b"GIF87a", b"GIF89a")):
+        return Detection("gif", "image/gif")
     if head[:4] in (b"RIFF", b"RIFX") and head[8:12] == b"WEBP":
         return Detection("webp", "image/webp")
     if head.startswith(b"%PDF-"):
@@ -42,6 +44,8 @@ def detect(path: Path) -> Detection:
             return Detection("mov", "video/quicktime")
         if suffix in {".m4a", ".m4b"}:
             return Detection("m4a", "audio/mp4")
+        if suffix == ".m4v":
+            return Detection("m4v", "video/x-m4v")
         return Detection("mp4", "video/mp4")
     if head.startswith(b"ID3") or suffix == ".mp3":
         return Detection("mp3", "audio/mpeg")
@@ -59,4 +63,6 @@ def detect(path: Path) -> Detection:
         return Detection("tar", "application/x-tar")
     if suffix == ".tar":
         return Detection("tar", "application/x-tar")
+    if suffix in {".dng", ".cr2", ".cr3", ".nef", ".arw", ".orf", ".pef", ".raw", ".crw", ".raf", ".rw2"}:
+        return Detection("raw", "image/x-raw")
     return Detection("unknown", "application/octet-stream")

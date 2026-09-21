@@ -34,6 +34,8 @@ def test_vercel_config_serves_static_browser_build_only():
     assert config["outputDirectory"] == "dist"
     assert "build_web.py" in config["buildCommand"]
     assert "--vendor-pyodide" in config["buildCommand"]
+    assert "--vendor-exiftool" in config["buildCommand"]
+    assert config["installCommand"].startswith("npm install")
     assert "functions" not in config
 
 
@@ -135,3 +137,40 @@ def test_vercel_ignore_hides_fastapi_entrypoints():
     assert "databreaker/app.py" in ignore
     assert "databreaker/__main__.py" in ignore
     assert "tests/" in ignore
+
+
+def test_exiftool_browser_inventory_is_bundled():
+    import json
+
+    root = Path(__file__).parents[1]
+    package = json.loads((root / "package.json").read_text(encoding="utf-8"))
+    entry = (root / "web" / "exiftool_runtime_entry.js").read_text(encoding="utf-8")
+    worker = (root / "databreaker" / "static" / "worker.js").read_text(encoding="utf-8")
+    builder = (root / "scripts" / "build_web.py").read_text(encoding="utf-8")
+
+    assert package["dependencies"]["@lilohuang/exiftool"] == "1.0.10"
+    assert package["dependencies"]["@lilohuang/zeroperl-ts"] == "1.0.11"
+    assert 'EXIFTOOL_VERSION = "13.59"' in entry
+    assert '"-ee3"' in entry
+    assert '"RequestAll=3"' in entry
+    assert '"-G0:4"' in entry
+    assert "extractAllMetadata" in worker
+    assert "ExifTool-WASM" in worker
+    assert "JUMDType" not in worker  # fields must come from ExifTool, not a hard-coded list
+    assert "build_exiftool.mjs" in builder
+
+
+def test_c2pa_fixture_is_present_for_browser_regression():
+    root = Path(__file__).parents[1]
+    fixture = (root / "tests" / "fixtures" / "c2pa.svg").read_text(encoding="utf-8")
+    assert "<c2pa:manifest>" in fixture
+    assert "AAABnWp1bWIA" in fixture
+
+
+def test_copy_all_inventory_control_exists():
+    root = Path(__file__).parents[1]
+    html = (root / "databreaker" / "static" / "index.html").read_text(encoding="utf-8")
+    app = (root / "databreaker" / "static" / "app.js").read_text(encoding="utf-8")
+    assert 'id="copyAllBtn"' in html
+    assert "navigator.clipboard.writeText" in app
+    assert "ExifTool fields" in app
