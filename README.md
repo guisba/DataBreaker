@@ -6,7 +6,7 @@
 
 English · Português (Brasil) &nbsp; | &nbsp; No telemetry &nbsp; | &nbsp; Files stay on your machine
 
-[Use DataBreaker online](https://databreaker-guisba.vercel.app/) · [Public documentation](https://caveras-personal-organization.gitbook.io/databreaker/) · [Releases](https://github.com/guisba/DataBreaker/releases)
+[Use DataBreaker online](https://databreaker-ashy.vercel.app/) · [Public documentation](https://caveras-personal-organization.gitbook.io/databreaker/) · [Releases](https://github.com/guisba/DataBreaker/releases)
 
 </div>
 
@@ -114,7 +114,7 @@ The public browser edition bundles ExifTool 13.59/ZeroPerl WebAssembly for local
 
 ## Public browser edition
 
-The browser-only Vercel edition is live at **https://databreaker-guisba.vercel.app/**. It runs the DataBreaker Python engine inside a WebAssembly/Pyodide worker. Files remain in the browser's local memory/filesystem rather than being uploaded to an application server.
+The browser-only Vercel edition is live at **https://databreaker-ashy.vercel.app/**. It runs the DataBreaker Python engine inside a WebAssembly/Pyodide worker. Files remain in the browser's local memory/filesystem rather than being uploaded to an application server.
 
 The Vercel build vendors the Pyodide core runtime **and the ExifTool/ZeroPerl WebAssembly inventory engine** with the site. JPEG/PNG/RAW metadata inventory therefore runs in the browser without uploading the selected file to a DataBreaker backend. Formats that need optional Python parsers for native cleaning, such as PDF or audio, can still fetch those parser packages on demand. Browser memory, device performance and supported WebAssembly features remain practical limits; the project does not advertise literally unlimited processing.
 
