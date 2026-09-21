@@ -58,6 +58,8 @@ def main() -> None:
         make_png(png)
         make_jpeg(jpg)
         c2pa = Path(__file__).parent / "fixtures" / "c2pa.svg"
+        modern_c2pa_env = os.environ.get("DATABREAKER_MODERN_C2PA_FIXTURE")
+        modern_c2pa = Path(modern_c2pa_env) if modern_c2pa_env else None
 
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
@@ -67,10 +69,15 @@ def main() -> None:
             page.on("pageerror", lambda exc: console_errors.append(str(exc)))
             page.on("requestfailed", lambda req: request_failures.append(f"{req.url}: {req.failure}"))
             page.goto(base_url, wait_until="domcontentloaded", timeout=60_000)
-            page.locator("#fileInput").set_input_files([str(png), str(jpg), str(c2pa)])
+            upload_files = [str(png), str(jpg), str(c2pa)]
+            if modern_c2pa is not None:
+                assert modern_c2pa.is_file(), modern_c2pa
+                upload_files.append(str(modern_c2pa))
+            page.locator("#fileInput").set_input_files(upload_files)
 
+            expected_tabs = len(upload_files)
             page.wait_for_function(
-                """() => document.querySelectorAll('.file-tab').length === 3 ||
+                f"""() => document.querySelectorAll('.file-tab').length === {expected_tabs} ||
                     !document.querySelector('#errorBanner').classList.contains('hidden')""",
                 timeout=300_000,
             )
@@ -104,6 +111,22 @@ def main() -> None:
             c2pa_text = page.locator("#findings").inner_text()
             assert "JUMDType" in c2pa_text, c2pa_text
             assert "JUMDLabel" in c2pa_text, c2pa_text
+
+
+            if modern_c2pa is not None:
+                page.locator(".file-tab").nth(3).click()
+                page.wait_for_timeout(100)
+                modern_text = page.locator("#findings").inner_text()
+                for field in (
+                    "JUMDLabel",
+                    "ActionsAction",
+                    "ActionsSoftwareAgentName",
+                    "ActionsDigitalSourceType",
+                    "Claim_Generator_InfoName",
+                ):
+                    assert field in modern_text, (field, modern_text)
+                assert "trainedAlgorithmicMedia" in modern_text, modern_text
+                assert "ChatGPT" in modern_text or "GPT-4o" in modern_text, modern_text
 
             page.locator(".file-tab").nth(1).click()
             page.locator("#cleanBtn").click()
